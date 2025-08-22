@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Cashback Tracker</title>
+    <style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    background: #f5f7fa;
+    color: #2d3748;
+    line-height: 1.5;
+}
+.app-container {
+    max-width: 100%;
+    background: #fff;
+    min-height: 100vh;
+}
+/* Header */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 20px 16px;
+    text-align: center;
+}
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+.tab-bar {
+    display: flex;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 0;
+}
+.tab {
+    flex: 1;
+    border: none;
+    background: #fff;
+    padding: 16px 8px;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: #667eea;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+.tab.active {
+    color: #667eea;
+    border-bottom: 3px solid #667eea;
+    background: #f8faff;
+}
+/* Main content */
+main {
+    padding: 16px;
+}
+
+/* Categories page layout - Desktop */
+.categories-layout {
+    display: flex;
+    gap: 0;
+    height: calc(100vh - 200px);
+    padding: 0;
+    position: relative;
+}
+.sidebar {
+    width: 200px;
+    background: #fff;
+    border-right: 2px solid #e2e8f0;
+    border-radius: 12px 0 0 12px;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+.category-nav-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+.category-nav-item:hover {
+    background: #f7fafc;
+}
+.category-nav-item.active {
+    background: #667eea;
+    color: #fff;
+}
+.category-nav-item .icon {
+    margin-right: 12px;
+    font-size: 1.2em;
+}
+.category-content {
+    flex: 1;
+    background: #fff;
+    border-radius: 0 12px 12px 0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Mobile hamburger menu */
+.mobile-category-header {
+    display: none;
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+}
+.hamburger-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+.hamburger-icon {
+    font-size: 1.5em;
+    color: #667eea;
+}
+.current-category {
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+}
+.current-category .icon {
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+.mobile-dropdown {
+    margin-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+    display: none;
+}
+.mobile-dropdown.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.mobile-category-item {
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    padding-left: 8px;
+}
+.mobile-category-item:hover {
+    background: #f7fafc;
+}
+.mobile-category-item.active {
+    background: #667eea;
+    color: #fff;
+}
+.mobile-category-item .icon {
+    margin-right: 12px;
+    font-size: 1.2em;
+    width: 24px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    main {
+        padding: 8px;
+    }
+    .categories-layout {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebar {
+        display: none;
+    }
+    .mobile-category-header {
+        display: block;
+    }
+    .category-content {
+        border-radius: 12px;
+        margin-top: 0;
+    }
+}
+
+.section-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+}
+.section-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+.section-title::before {
+    content: "";
+    width: 4px;
+    height: 20px;
+    background: #667eea;
+    border-radius: 2px;
+    margin-right: 12px;
+}
+/* Form elements */
+.form-group {
+    margin-bottom: 16px;
+}
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1em;
+    background: #fff;
+    transition: border-color 0.3s ease;
+}
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.form-row {
+    display: flex;
+    gap: 12px;
+    align-items: end;
+}
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+/* Cashback preview */
+.cashback-preview {
+    background: #f0fff4;
+    border: 2px solid #68d391;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+    text-align: center;
+    font-weight: 600;
+    color: #2f855a;
+}
+/* Buttons */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 44px;
+}
+.btn-primary {
+    background: #48bb78;
+    color: #fff;
+}
+.btn-primary:hover, .btn-primary:active {
+    background: #38a169;
+}
+.btn-secondary {
+    background: #667eea;
+    color: #fff;
+}
+.btn-secondary:hover, .btn-secondary:active {
+    background: #5a67d8;
+}
+.btn-danger {
+    background: #f56565;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 0.85em;
+}
+.btn-danger:hover, .btn-danger:active {
+    background: #e53e3e;
+}
+.btn-warning {
+    background: #ed8936;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 0.85em;
+}
+.btn-warning:hover, .btn-warning:active {
+    background: #dd6b20;
+}
+/* Category display */
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+}
+.category-name-large {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+}
+.category-name-large .icon {
+    margin-right: 12px;
+    font-size: 1.5em;
+}
+.category-cap {
+    font-size: 0.9em;
+    color: #718096;
+    background: #edf2f7;
+    padding: 6px 12px;
+    border-radius: 16px;
+}
+.cashback-rate {
+    font-size: 0.85em;
+    color: #2f855a;
+    background: #f0fff4;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+}
+/* Transaction list */
+.transaction-list {
+    margin-bottom: 16px;
+}
+.transaction-item {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid #e2e8f0;
+}
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.transaction-details {
+    display: flex;
+    flex-direction: column;
+}
+.transaction-amount {
+    font-size: 0.9em;
+    color: #4a5568;
+}
+.cashback-amount {
+    font-weight: 600;
+    color: #48bb78;
+    font-size: 1.1em;
+}
+.transaction-date {
+    font-size: 0.9em;
+    color: #718096;
+}
+.transaction-notes {
+    font-size: 0.9em;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+.transaction-actions {
+    display: flex;
+    gap: 8px;
+}
+/* Progress bar */
+.progress-container {
+    margin: 16px 0;
+}
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78 0%, #667eea 100%);
+    transition: width 0.3s ease;
+}
+/* Summary */
+.summary-card {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.summary-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.summary-amount {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+.summary-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.summary-item {
+    text-align: center;
+}
+.summary-item-label {
+    font-size: 0.85em;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+.summary-item-value {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+/* History */
+.history-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 4px solid #667eea;
+}
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.history-period {
+    font-weight: 600;
+    color: #2d3748;
+}
+.history-amount {
+    font-weight: 600;
+    color: #48bb78;
+}
+.history-actions {
+    display: flex;
+    gap: 8px;
+}
+/* Alert messages */
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9em;
+}
+.alert-warning {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .form-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .form-row .form-group {
+        width: 100%;
+    }
+    .summary-breakdown {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>💳 Cashback Tracker</h1>
+        </header>
+        <div class="tab-bar">
+            <button id="tab-current" class="tab active">Current Cycle</button>
+            <button id="tab-categories" class="tab">Cashback Categories</button>
+            <button id="tab-history" class="tab">History</button>
+        </div>
+        <main>
+            <section id="page-current"></section>
+            <section id="page-categories" style="display:none"></section>
+            <section id="page-history" style="display:none"></section>
+        </main>
+    </div>
+
+<script>
+const categories = [
+    { name: "Recharges", cap: 250, icon: "📱", rate: 0.25 },
+    { name: "Utilities", cap: 250, icon: "⚡", rate: 0.0825 },
+    { name: "Bigbasket and Swiggy", cap: 500, icon: "🛒", rate: 0.10 },
+    { name: "Others", cap: null, icon: "💸", rate: 0.01 }
+];
+
+const STORAGE_KEY = "cbTrackerCyclesV4";
+const SETTINGS_KEY = "cbTrackerSettingsV4";
+
+let settings = loadSettings();
+let cycles = loadCycles();
+let currentCycle = getOrCreateCurrentCycle();
+let selectedCategoryIndex = 0;
+
+const tabCurrent = document.getElementById("tab-current");
+const tabCategories = document.getElementById("tab-categories");
+const tabHistory = document.getElementById("tab-history");
+const pageCurrent = document.getElementById("page-current");
+const pageCategories = document.getElementById("page-categories");
+const pageHistory = document.getElementById("page-history");
+
+tabCurrent.onclick = () => showTab("current");
+tabCategories.onclick = () => showTab("categories");
+tabHistory.onclick = () => showTab("history");
+
+function showTab(which) {
+    // Update active tab
+    tabCurrent.classList.toggle("active", which === "current");
+    tabCategories.classList.toggle("active", which === "categories");
+    tabHistory.classList.toggle("active", which === "history");
+    
+    // Show/hide pages
+    pageCurrent.style.display = which === "current" ? "" : "none";
+    pageCategories.style.display = which === "categories" ? "" : "none";
+    pageHistory.style.display = which === "history" ? "" : "none";
+    
+    // Render appropriate content
+    if (which === "current") {
+        renderCurrentCycle();
+    } else if (which === "categories") {
+        renderCategoriesPage();
+    } else if (which === "history") {
+        renderHistory();
+    }
+}
+
+function loadSettings() {
+    try {
+        const s = localStorage.getItem(SETTINGS_KEY);
+        if (s) return JSON.parse(s);
+        return { billingDate: new Date().getDate() };
+    } catch (error) {
+        return { billingDate: new Date().getDate() };
+    }
+}
+function saveSettings() {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function loadCycles() {
+    try {
+        const c = localStorage.getItem(STORAGE_KEY);
+        if (c) return JSON.parse(c);
+        return [];
+    } catch (error) {
+        return [];
+    }
+}
+function saveCycles() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cycles));
+}
+
+function getCurrentCyclePeriod() {
+    let today = new Date();
+    let d = settings.billingDate || today.getDate();
+    let y = today.getFullYear();
+    let m = today.getMonth();
+    let start, end;
+    if (today.getDate() >= d) {
+        start = new Date(y, m, d);
+        end = new Date(y, m + 1, d);
+    } else {
+        start = new Date(y, m - 1, d);
+        end = new Date(y, m, d);
+    }
+    start.setHours(0,0,0,0); 
+    end.setHours(0,0,0,0);
+    return { startDate: start, endDate: end };
+}
+
+function getOrCreateCurrentCycle() {
+    const {startDate, endDate} = getCurrentCyclePeriod();
+    let s = startDate.toISOString().slice(0,10);
+    let e = endDate.toISOString().slice(0,10);
+    let existing = cycles.find(c => c.s === s && c.e === e);
+    if (existing) return existing;
+    let newCyc = { s, e, transactions: [] };
+    cycles.push(newCyc);
+    saveCycles();
+    return newCyc;
+}
+
+function calculateCashback(transactionAmount, categoryIndex) {
+    return transactionAmount * categories[categoryIndex].rate;
+}
+
+function formatRate(rate) {
+    return (rate * 100).toFixed(rate === 0.0825 ? 2 : 0) + '%';
+}
+
+// CURRENT CYCLE TAB
+function renderCurrentCycle() {
+    currentCycle = getOrCreateCurrentCycle();
+    const billingDate = settings.billingDate || new Date().getDate();
+    
+    // Calculate cashback totals (not transaction totals)
+    const totalCashback = currentCycle.transactions.reduce((sum, tx) => sum + Number(tx.cashback), 0);
+    const categoryTotals = categories.map((cat, idx) => 
+        currentCycle.transactions.filter(tx => tx.cat === idx).reduce((sum, tx) => sum + Number(tx.cashback), 0)
+    );
+    
+    pageCurrent.innerHTML = `
+        <div class="section-card">
+            <div class="form-group">
+                <label class="form-label">📅 Billing Date</label>
+                <input type="date" id="billing-date-selector" class="form-input" value="${getDatePickerValue(billingDate)}">
+            </div>
+            <div style="text-align: center; color: #718096; font-size: 0.9em; margin-top: 12px;">
+                <strong>Current Cycle:</strong> ${formatDate(currentCycle.s)} to ${formatDate(currentCycle.e)}
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-title">💰 Total Cashback Earned</div>
+            <div class="summary-amount">₹${totalCashback.toFixed(2)}</div>
+            <div class="summary-breakdown">
+                ${categories.map((cat, idx) => `
+                    <div class="summary-item">
+                        <div class="summary-item-label">${cat.icon} ${cat.name}</div>
+                        <div class="summary-item-value">₹${categoryTotals[idx].toFixed(2)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div class="section-card" style="text-align: center;">
+            <div style="font-size: 1.1em; color: #4a5568; margin-bottom: 12px;">
+                💡 <strong>Add transactions in the "Cashback Categories" tab</strong>
+            </div>
+            <button class="btn btn-secondary" onclick="showTab('categories')" style="padding: 12px 24px;">
+                Go to Categories →
+            </button>
+        </div>
+    `;
+    
+    // Billing date handler
+    document.getElementById('billing-date-selector').addEventListener('change', function(e){
+        let newBillingDate = Number(e.target.value.split("-")[2]);
+        settings.billingDate = newBillingDate;
+        saveSettings();
+        currentCycle = getOrCreateCurrentCycle();
+        renderCurrentCycle();
+    });
+}
+
+// CATEGORIES TAB
+function renderCategoriesPage() {
+    currentCycle = getOrCreateCurrentCycle();
+    
+    pageCategories.innerHTML = `
+        <!-- Mobile hamburger menu -->
+        <div class="mobile-category-header">
+            <div class="hamburger-menu" onclick="toggleMobileDropdown()">
+                <div class="current-category">
+                    <span class="icon">${categories[selectedCategoryIndex].icon}</span>
+                    <span>${categories[selectedCategoryIndex].name}</span>
+                </div>
+                <div class="hamburger-icon">☰</div>
+            </div>
+            <div class="mobile-dropdown" id="mobile-dropdown">
+                ${categories.map((cat, idx) => `
+                    <div class="mobile-category-item ${idx === selectedCategoryIndex ? 'active' : ''}" onclick="selectCategory(${idx})">
+                        <span class="icon">${cat.icon}</span>
+                        <span>${cat.name} (${formatRate(cat.rate)})</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        
+        <!-- Desktop/tablet layout -->
+        <div class="categories-layout">
+            <div class="sidebar">
+                ${categories.map((cat, idx) => `
+                    <div class="category-nav-item ${idx === selectedCategoryIndex ? 'active' : ''}" onclick="selectCategory(${idx})">
+                        <span class="icon">${cat.icon}</span>
+                        <span>${cat.name}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="category-content" id="category-content">
+                <!-- Category content will be rendered here -->
+            </div>
+        </div>
+    `;
+    
+    renderSelectedCategory();
+}
+
+window.toggleMobileDropdown = function() {
+    const dropdown = document.getElementById('mobile-dropdown');
+    dropdown.classList.toggle('show');
+}
+
+window.selectCategory = function(categoryIndex) {
+    selectedCategoryIndex = categoryIndex;
+    // Hide mobile dropdown
+    const dropdown = document.getElementById('mobile-dropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+    renderCategoriesPage();
+}
+
+function renderSelectedCategory() {
+    const categoryContentEl = document.getElementById('category-content');
+    if (!categoryContentEl) return;
+    
+    const cat = categories[selectedCategoryIndex];
+    const transactions = currentCycle.transactions.filter(tx => tx.cat === selectedCategoryIndex);
+    const totalCashback = transactions.reduce((sum, tx) => sum + Number(tx.cashback), 0);
+    const percentage = cat.cap ? Math.min((totalCashback / cat.cap) * 100, 100) : 0;
+    
+    categoryContentEl.innerHTML = `
+        <div class="category-header">
+            <div class="category-name-large">
+                <span class="icon">${cat.icon}</span>
+                <span>${cat.name}</span>
+                <span class="cashback-rate">${formatRate(cat.rate)} cashback</span>
+            </div>
+            <div class="category-cap">${cat.cap ? `₹${cat.cap} cashback cap` : 'Unlimited'}</div>
+        </div>
+        
+        ${cat.cap ? `
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>₹${totalCashback.toFixed(2)} cashback earned</span>
+                    <span>${percentage.toFixed(1)}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                </div>
+            </div>
+        ` : `
+            <div style="text-align: center; padding: 12px; background: #f0fff4; border-radius: 8px; margin-bottom: 16px;">
+                <strong>₹${totalCashback.toFixed(2)}</strong> cashback earned (No cap limit)
+            </div>
+        `}
+        
+        ${percentage >= 100 ? '<div class="alert alert-warning">⚠️ Cashback cap limit reached for this cycle!</div>' : ''}
+        
+        <div class="transaction-list" id="transaction-list"></div>
+        
+        <form id="transaction-form" style="margin-top: 20px;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Transaction Amount (₹)</label>
+                    <input type="number" id="transaction-amount" class="form-input" step="0.01" min="0" placeholder="0.00" required oninput="updateCashbackPreview()">
+                </div>
+            </div>
+            <div class="cashback-preview" id="cashback-preview" style="display: none;">
+                Cashback: ₹0.00
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes (optional)</label>
+                <input type="text" class="form-input" placeholder="Add a note...">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Save Transaction</button>
+        </form>
+    `;
+    
+    // Render transactions
+    const transactionsList = document.getElementById('transaction-list');
+    transactions.forEach((tx, idx) => {
+        const transactionEl = document.createElement("div");
+        transactionEl.className = "transaction-item";
+        transactionEl.innerHTML = `
+            <div class="transaction-header">
+                <div class="transaction-details">
+                    <div class="transaction-amount">Transaction: ₹${Number(tx.amount).toFixed(2)}</div>
+                    <div class="cashback-amount">Cashback: ₹${Number(tx.cashback).toFixed(2)}</div>
+                </div>
+                <div class="transaction-date">${formatDate(tx.date)}</div>
+            </div>
+            ${tx.notes ? `<div class="transaction-notes">${tx.notes}</div>` : ''}
+            <div class="transaction-actions">
+                <button class="btn btn-warning" onclick="editTransaction(${selectedCategoryIndex}, ${idx})">✏️ Edit</button>
+                <button class="btn btn-danger" onclick="deleteTransaction(${selectedCategoryIndex}, ${idx})">🗑️ Delete</button>
+            </div>
+        `;
+        transactionsList.appendChild(transactionEl);
+    });
+    
+    // Form handler
+    document.getElementById('transaction-form').onsubmit = function(e) {
+        e.preventDefault();
+        const [dateInput, amountInput, notesInput] = this.elements;
+        const date = dateInput.value;
+        const transactionAmount = parseFloat(amountInput.value);
+        const notes = notesInput.value.trim();
+        
+        if (!date || !transactionAmount) return false;
+        
+        const cashback = calculateCashback(transactionAmount, selectedCategoryIndex);
+        
+        // Cap check (based on cashback, not transaction amount)
+        if (cat.cap && (totalCashback + cashback) > cat.cap) {
+            alert(`⚠️ Warning: Adding this transaction would earn ₹${cashback.toFixed(2)} cashback, exceeding the cap limit of ₹${cat.cap} for ${cat.name}.`);
+            return false;
+        }
+        
+        currentCycle.transactions.push({
+            date: date,
+            amount: transactionAmount,
+            cashback: cashback,
+            notes: notes,
+            cat: selectedCategoryIndex
+        });
+        
+        saveCycles();
+        renderSelectedCategory();
+        return false;
+    };
+}
+
+window.updateCashbackPreview = function() {
+    const amountInput = document.getElementById('transaction-amount');
+    const preview = document.getElementById('cashback-preview');
+    
+    if (amountInput && preview) {
+        const amount = parseFloat(amountInput.value) || 0;
+        if (amount > 0) {
+            const cashback = calculateCashback(amount, selectedCategoryIndex);
+            preview.innerHTML = `Cashback: ₹${cashback.toFixed(2)} (${formatRate(categories[selectedCategoryIndex].rate)})`;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+}
+
+// Transaction management
+window.deleteTransaction = function(catIdx, txIdx) {
+    if (!confirm("Are you sure you want to delete this transaction?")) return;
+    const transactions = currentCycle.transactions.filter(tx => tx.cat === catIdx);
+    const txToDelete = transactions[txIdx];
+    currentCycle.transactions = currentCycle.transactions.filter(tx => tx !== txToDelete);
+    saveCycles();
+    renderSelectedCategory();
+};
+
+window.editTransaction = function(catIdx, txIdx) {
+    const transactions = currentCycle.transactions.filter(tx => tx.cat === catIdx);
+    const tx = transactions[txIdx];
+    const newAmount = prompt("Enter new transaction amount:", tx.amount);
+    const newNotes = prompt("Enter new notes:", tx.notes || "");
+    if (newAmount !== null && !isNaN(parseFloat(newAmount))) {
+        tx.amount = parseFloat(newAmount);
+        tx.cashback = calculateCashback(tx.amount, catIdx);
+        tx.notes = newNotes || "";
+        saveCycles();
+        renderSelectedCategory();
+    }
+};
+
+// HISTORY TAB
+function renderHistory() {
+    let html = `
+        <div class="section-card">
+            <div class="section-title">📊 Billing History</div>
+            <div style="text-align: center; color: #718096; margin-bottom: 20px;">
+                Billing Date: <strong>${settings.billingDate}</strong> of every month
+            </div>
+        </div>
+    `;
+    
+    if (cycles.length === 0) {
+        html += `
+            <div class="section-card" style="text-align: center; padding: 40px;">
+                <div style="font-size: 3em; margin-bottom: 16px;">📈</div>
+                <div style="font-size: 1.1em; color: #718096;">No transaction history yet</div>
+                <div style="font-size: 0.9em; color: #a0aec0; margin-top: 8px;">Start adding transactions to see your history</div>
+            </div>
+        `;
+    } else {
+        cycles.slice().reverse().forEach((cyc) => {
+            const cycTotal = cyc.transactions.reduce((sum, tx) => sum + Number(tx.cashback || 0), 0);
+            html += `
+                <div class="history-item">
+                    <div class="history-header">
+                        <div class="history-period">${formatDate(cyc.s)} to ${formatDate(cyc.e)}</div>
+                        <div class="history-amount">₹${cycTotal.toFixed(2)}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn btn-secondary" onclick="viewCycle('${cyc.s}')">👁️ View Details</button>
+                        <button class="btn btn-danger" onclick="deleteCycle('${cyc.s}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    pageHistory.innerHTML = html;
+}
+
+window.viewCycle = function(startDateStr) {
+    const cycle = cycles.find(c => c.s === startDateStr);
+    if (!cycle) return;
+    
+    let msg = `📅 Billing Cycle: ${formatDate(cycle.s)} to ${formatDate(cycle.e)}\n\n`;
+    msg += `💰 Cashback Totals by Category:\n`;
+    
+    categories.forEach((cat, idx) => {
+        const catTotal = cycle.transactions.filter(tx => tx.cat === idx).reduce((sum, tx) => sum + Number(tx.cashback || 0), 0);
+        msg += `${cat.icon} ${cat.name}: ₹${catTotal.toFixed(2)}\n`;
+    });
+    
+    const totalCashback = cycle.transactions.reduce((sum, tx) => sum + Number(tx.cashback || 0), 0);
+    msg += `\n🎯 Total Cashback Earned: ₹${totalCashback.toFixed(2)}\n\n`;
+    
+    msg += `📋 Transactions (${cycle.transactions.length}):\n`;
+    cycle.transactions.forEach(tx => {
+        msg += `• ${formatDate(tx.date)} - ₹${Number(tx.amount).toFixed(2)} → ₹${Number(tx.cashback || 0).toFixed(2)} cashback (${categories[tx.cat].name})${tx.notes ? ` - ${tx.notes}` : ""}\n`;
+    });
+    
+    alert(msg);
+};
+
+window.deleteCycle = function(startDateStr) {
+    if (!confirm("⚠️ Are you sure you want to delete this entire billing cycle and all its transactions? This action cannot be undone.")) return;
+    cycles = cycles.filter(c => c.s !== startDateStr);
+    saveCycles();
+    renderHistory();
+};
+
+function getDatePickerValue(dayOfMonth) {
+    let now = new Date();
+    let m = now.getMonth() + 1;
+    let y = now.getFullYear();
+    let day = String(dayOfMonth).padStart(2, "0");
+    return `${y}-${String(m).padStart(2, "0")}-${day}`;
+}
+
+function formatDate(iso) {
+    if (!iso) return '';
+    let [y, m, d] = iso.split("-");
+    let dt = new Date(Number(y), Number(m) - 1, Number(d));
+    return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', function() {
+    showTab("current");
+});
+if (document.readyState !== 'loading') {
+    showTab("current");
+}
+</script>
+</body>
+</html>
